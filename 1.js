@@ -363,13 +363,13 @@ async function processId(id, hash, threadNumber) {
                                         // 发送请求
                                         const res1 = await post1(url1, data1);
                                         table = res1.table; // 更新
-                                        console.log(`${colors.blue}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 获取购买掉落箱子成功 `, width)}${colors.reset}`);
+                                        console.log(`${colors.blue}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 获取合成箱子成功 `, width)}${colors.reset}`);
                                         console.log(`${colors.green}${centerTextWithBorders(` 箱子位置: ${JSON.stringify(res1.table)} `, width)}${colors.reset}`);
                                         console.log(`${colors.green}${centerTextWithBorders(` 金币数据: ${JSON.stringify(res1.gold)} `, width)}${colors.reset}`);
                                         console.log(`${colors.green}${centerTextWithBorders(` 已获得数据: ${JSON.stringify(res1.earned)} `, width)}${colors.reset}`);
                                         console.log(`${colors.green}${centerTextWithBorders(` 已购买数据: ${JSON.stringify(res1.bought)} `, width)}${colors.reset}`);
                                     } catch (error) {
-                                        console.error(`${colors.blue}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 获取购买掉落箱子失败, ${error.message}`, width)}${colors.reset}`);
+                                        console.error(`${colors.blue}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 获取合成箱子失败, ${error.message}`, width)}${colors.reset}`);
                                     }
                                 }
                             } else {
@@ -444,13 +444,13 @@ async function processId(id, hash, threadNumber) {
                                 // 发送请求
                                 const res1 = await post1(url1, data1);
                                 table = res1.table; // 更新
-                                console.log(`${colors.blue}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 获取购买掉落箱子成功 `, width)}${colors.reset}`);
+                                console.log(`${colors.blue}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 获取合成箱子成功 `, width)}${colors.reset}`);
                                 console.log(`${colors.green}${centerTextWithBorders(` 箱子位置: ${JSON.stringify(res1.table)} `, width)}${colors.reset}`);
                                 console.log(`${colors.green}${centerTextWithBorders(` 金币数据: ${JSON.stringify(res1.gold)} `, width)}${colors.reset}`);
                                 console.log(`${colors.green}${centerTextWithBorders(` 已获得数据: ${JSON.stringify(res1.earned)} `, width)}${colors.reset}`);
                                 console.log(`${colors.green}${centerTextWithBorders(` 已购买数据: ${JSON.stringify(res1.bought)} `, width)}${colors.reset}`);
                             } catch (error) {
-                                console.error(`${colors.blue}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 获取购买掉落箱子失败, ${error.message}`, width)}${colors.reset}`);
+                                console.error(`${colors.blue}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 获取合成箱子失败, ${error.message}`, width)}${colors.reset}`);
                             }
                         }
                     } else {
@@ -530,13 +530,13 @@ async function processId(id, hash, threadNumber) {
                     // 发送请求
                     const res1 = await post1(url1, data1);
                     table = res1.table; // 更新
-                    console.log(`${colors.blue}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 获取购买掉落箱子成功 `, width)}${colors.reset}`);
+                    console.log(`${colors.blue}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 获取合成箱子成功 `, width)}${colors.reset}`);
                     console.log(`${colors.green}${centerTextWithBorders(` 箱子位置: ${JSON.stringify(res1.table)} `, width)}${colors.reset}`);
                     console.log(`${colors.green}${centerTextWithBorders(` 金币数据: ${JSON.stringify(res1.gold)} `, width)}${colors.reset}`);
                     console.log(`${colors.green}${centerTextWithBorders(` 已获得数据: ${JSON.stringify(res1.earned)} `, width)}${colors.reset}`);
                     console.log(`${colors.green}${centerTextWithBorders(` 已购买数据: ${JSON.stringify(res1.bought)} `, width)}${colors.reset}`);
                 } catch (error) {
-                    console.error(`${colors.blue}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 获取购买掉落箱子失败, ${error.message}`, width)}${colors.reset}`);
+                    console.error(`${colors.blue}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 获取合成箱子失败, ${error.message}`, width)}${colors.reset}`);
                 }
             }
         } else {
