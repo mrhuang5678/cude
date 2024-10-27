@@ -7,7 +7,7 @@ const path = require('path');
 // 辅助
 // -----------------------------------------------------------------------------------------------------
 const failedIds = new Set(); // 报错id 
-const maxConcurrentThreads = 1; // 线程数
+const maxConcurrentThreads = 3; // 线程数
 let currentIndex = 0; // 
 
 const maxRetries = 3; // 最大重试次数
@@ -284,111 +284,108 @@ async function processId(id, hash, threadNumber) {
 
                 let currentLvl = maxLevel <= 3 ? 0 : maxLevel - 3;
                 let attempts = 0;
-                
+
                 if (notInTable.length > 0) {
-                    while (currentLvl >= 0) {
-                        console.log(`${colors.green}${centerTextWithBorders(` 设置参数: ${currentLvl} `, width)}${colors.reset}`);
-                        try {
+                    console.log(`${colors.green}${centerTextWithBorders(` 设置参数: ${currentLvl} `, width)}${colors.reset}`);
+                    try {
 
-                            const url1 = 'https://server.questioncube.xyz/merge';
+                        const url1 = 'https://server.questioncube.xyz/merge';
 
-                            // 根据 notInTable 构建 events 数组
-                            const events = notInTable.map(position => ({
-                                type: 'buy',
-                                data: { id: position, lvl: currentLvl }
-                            }));
-                            const data1 = {
-                                events: events,
-                                token: token,
-                            };
-                            const res1 = await post1(url1, data1);
-                            table = res1.table; // 更新
-                            console.log(`${colors.blue}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 获取购买掉落箱子成功 `, width)}${colors.reset}`);
-                            console.log(`${colors.green}${centerTextWithBorders(` 箱子位置: ${JSON.stringify(res1.table)} `, width)}${colors.reset}`);
-                            console.log(`${colors.green}${centerTextWithBorders(` 金币数据: ${JSON.stringify(res1.table)} `, width)}${colors.reset}`);
-                            console.log(`${colors.green}${centerTextWithBorders(` 已获得数据: ${JSON.stringify(res1.earned)} `, width)}${colors.reset}`);
-                            console.log(`${colors.green}${centerTextWithBorders(` 已购买数据: ${JSON.stringify(res1.bought)} `, width)}${colors.reset}`);
+                        // 根据 notInTable 构建 events 数组
+                        const events = notInTable.map(position => ({
+                            type: 'buy',
+                            data: { id: position, lvl: currentLvl }
+                        }));
+                        const data1 = {
+                            events: events,
+                            token: token,
+                        };
+                        const res1 = await post1(url1, data1);
+                        table = res1.table; // 更新
+                        console.log(`${colors.blue}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 获取购买掉落箱子成功 `, width)}${colors.reset}`);
+                        console.log(`${colors.green}${centerTextWithBorders(` 箱子位置: ${JSON.stringify(res1.table)} `, width)}${colors.reset}`);
+                        console.log(`${colors.green}${centerTextWithBorders(` 金币数据: ${JSON.stringify(res1.table)} `, width)}${colors.reset}`);
+                        console.log(`${colors.green}${centerTextWithBorders(` 已获得数据: ${JSON.stringify(res1.earned)} `, width)}${colors.reset}`);
+                        console.log(`${colors.green}${centerTextWithBorders(` 已购买数据: ${JSON.stringify(res1.bought)} `, width)}${colors.reset}`);
 
-                            console.log(`${colors.blue}${printDivider(width)}${colors.reset}`);
-                            console.log(`${colors.blue}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 没有箱子不在格子位置的 `, width)}${colors.reset}`);
-                            // 列出相同等级且位置数量大于 2 的箱子位置
-                            const duplicatePositions = Object.entries(valueKeysMap)
-                                .filter(([_, keys]) => keys.length >= 2)
-                                .map(([value, keys]) => {
-                                    const numPairs = Math.floor(keys.length / 2);
-                                    // 构建从和到的位置数据
-                                    const pairs = [];
-                                    for (let i = 0; i < numPairs; i++) {
-                                        pairs.push({
-                                            from: keys[i * 2],
-                                            to: keys[i * 2 + 1],
-                                        });
-                                    }
-                                    return { level: value, pairs };
-                                });
-                            if (duplicatePositions.length > 0) {
+                        console.log(`${colors.blue}${printDivider(width)}${colors.reset}`);
+                        console.log(`${colors.blue}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 没有箱子不在格子位置的 `, width)}${colors.reset}`);
+                        // 列出相同等级且位置数量大于 2 的箱子位置
+                        const duplicatePositions = Object.entries(valueKeysMap)
+                            .filter(([_, keys]) => keys.length >= 2)
+                            .map(([value, keys]) => {
+                                const numPairs = Math.floor(keys.length / 2);
+                                // 构建从和到的位置数据
+                                const pairs = [];
+                                for (let i = 0; i < numPairs; i++) {
+                                    pairs.push({
+                                        from: keys[i * 2],
+                                        to: keys[i * 2 + 1],
+                                    });
+                                }
+                                return { level: value, pairs };
+                            });
+                        if (duplicatePositions.length > 0) {
 
-                                console.log(`${colors.blue}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 相同等级且数量大于 2 的箱子位置合成 `, width)}${colors.reset}`);
-                                duplicatePositions.forEach(({ level, pairs }) => {
-                                    const pairStr = pairs.map(({ from, to }) => `从 ${to} 移到 ${from}`).join(' | ');
-                                    console.log(`${colors.green}${centerTextWithBorders(` 等级 ${level}: ${pairStr} `, width)}${colors.reset}`);
-                                });
+                            console.log(`${colors.blue}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 相同等级且数量大于 2 的箱子位置合成 `, width)}${colors.reset}`);
+                            duplicatePositions.forEach(({ level, pairs }) => {
+                                const pairStr = pairs.map(({ from, to }) => `从 ${to} 移到 ${from}`).join(' | ');
+                                console.log(`${colors.green}${centerTextWithBorders(` 等级 ${level}: ${pairStr} `, width)}${colors.reset}`);
+                            });
 
-                                // 构建所有的事件数据
-                                const eventsData = [];
+                            // 构建所有的事件数据
+                            const eventsData = [];
 
-                                for (const { pairs } of duplicatePositions) {
+                            for (const { pairs } of duplicatePositions) {
 
-                                    for (const { from, to } of pairs) {
+                                for (const { from, to } of pairs) {
 
-                                        const fromInt = parseInt(from, 10);
-                                        const toInt = parseInt(to, 10);
-                                        eventsData.push({
-                                            type: 'move',
-                                            data: { from: fromInt, to: toInt }
-                                        });
-
-                                    }
+                                    const fromInt = parseInt(from, 10);
+                                    const toInt = parseInt(to, 10);
+                                    eventsData.push({
+                                        type: 'move',
+                                        data: { from: fromInt, to: toInt }
+                                    });
 
                                 }
-                                console.log(`${colors.blue}${printDivider(width)}${colors.reset}`);
-                                if (eventsData.length > 0) {
-                                    try {
-                                        const url1 = 'https://server.questioncube.xyz/merge';
 
-                                        const data1 = {
-                                            events: eventsData,
-                                            token: token,
-                                        };
-                                        // 发送请求
-                                        const res1 = await post1(url1, data1);
-                                        table = res1.table; // 更新
-                                        console.log(`${colors.blue}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 获取合成箱子成功 `, width)}${colors.reset}`);
-                                        console.log(`${colors.green}${centerTextWithBorders(` 箱子位置: ${JSON.stringify(res1.table)} `, width)}${colors.reset}`);
-                                        console.log(`${colors.green}${centerTextWithBorders(` 金币数据: ${JSON.stringify(res1.gold)} `, width)}${colors.reset}`);
-                                        console.log(`${colors.green}${centerTextWithBorders(` 已获得数据: ${JSON.stringify(res1.earned)} `, width)}${colors.reset}`);
-                                        console.log(`${colors.green}${centerTextWithBorders(` 已购买数据: ${JSON.stringify(res1.bought)} `, width)}${colors.reset}`);
-                                    } catch (error) {
-                                        console.error(`${colors.blue}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 获取合成箱子失败, ${error.message}`, width)}${colors.reset}`);
-                                    }
-                                }
-                            } else {
-                                console.log(`${colors.blue}${centerTextWithBorders(` 没有相同等级且数量大于 2 的箱子 `, width)}${colors.reset}`);
-                            }
-                            break;
-
-                        } catch (error) {
-                            console.error(`${colors.blue}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 获取购买掉落箱子失败, 第 ${attempts + 1}/${maxRetries}次尝试, ${error.message}`, width)}${colors.reset}`);
-                            currentLvl--;
-                            attempts++;
-
-                            if (currentLvl < 0) {
-                                console.log(`${colors.red}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 的请求全部失败，已跳过`, width)}${colors.reset}`);
-                                break; // 如果 lvl 递减到 0，则跳过
                             }
                             console.log(`${colors.blue}${printDivider(width)}${colors.reset}`);
+                            if (eventsData.length > 0) {
+                                try {
+                                    const url1 = 'https://server.questioncube.xyz/merge';
+
+                                    const data1 = {
+                                        events: eventsData,
+                                        token: token,
+                                    };
+                                    // 发送请求
+                                    const res1 = await post1(url1, data1);
+                                    table = res1.table; // 更新
+                                    console.log(`${colors.blue}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 获取合成箱子成功 `, width)}${colors.reset}`);
+                                    console.log(`${colors.green}${centerTextWithBorders(` 箱子位置: ${JSON.stringify(res1.table)} `, width)}${colors.reset}`);
+                                    console.log(`${colors.green}${centerTextWithBorders(` 金币数据: ${JSON.stringify(res1.gold)} `, width)}${colors.reset}`);
+                                    console.log(`${colors.green}${centerTextWithBorders(` 已获得数据: ${JSON.stringify(res1.earned)} `, width)}${colors.reset}`);
+                                    console.log(`${colors.green}${centerTextWithBorders(` 已购买数据: ${JSON.stringify(res1.bought)} `, width)}${colors.reset}`);
+                                } catch (error) {
+                                    console.error(`${colors.blue}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 获取合成箱子失败, ${error.message}`, width)}${colors.reset}`);
+                                }
+                            }
+                        } else {
+                            console.log(`${colors.blue}${centerTextWithBorders(` 没有相同等级且数量大于 2 的箱子 `, width)}${colors.reset}`);
                         }
+                        break;
+
+                    } catch (error) {
+                        console.error(`${colors.blue}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 获取购买掉落箱子失败, 第 ${attempts + 1}/${maxRetries}次尝试, ${error.message}`, width)}${colors.reset}`);
+                        attempts++;
+
+                        if (currentLvl === maxLevel - 3) {
+                            currentLvl = 1;
+                        }
+                        console.log(`${colors.blue}${printDivider(width)}${colors.reset}`);
                     }
+
                 } else {
                     console.log(`${colors.blue}${printDivider(width)}${colors.reset}`);
                     console.log(`${colors.blue}${centerTextWithBorders(` 线程 ${threadNumber}: id为${id} 没有箱子不在格子位置的 `, width)}${colors.reset}`);
@@ -605,9 +602,9 @@ async function main() {
         currentIndex = 0;
         console.log(`${colors.blue}${centerTextWithBorders(' 所有任务完成 ', width)}${colors.reset}`);
 
-        const randomNumber = await getRandomNumber(10, 20);
-        console.log(`${colors.blue}${centerTextWithBorders(` 重新开始,等待时间: ${randomNumber} 秒 `, width)}${colors.reset}`);
-        await countdown(randomNumber);
+        // const randomNumber = await getRandomNumber(10, 20);
+        // console.log(`${colors.blue}${centerTextWithBorders(` 重新开始,等待时间: ${randomNumber} 秒 `, width)}${colors.reset}`);
+        // await countdown(randomNumber);
     }
 }
 
